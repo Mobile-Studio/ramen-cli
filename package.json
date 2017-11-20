@@ -1,0 +1,32 @@
+{
+  "name": "ramen-cli",
+  "version": "1.0.0",
+  "description": "high level CLI for holding falabella",
+  "main": "ramen-cli.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "pkg": {
+    "scripts": "commands/**/*.js",
+    "assets": "assets/**/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://dmunozgaete2017@bitbucket.org/peanuthub/ramen-cli.git"
+  },
+  "keywords": [
+    "CLI",
+    "Peanuthub",
+    "SF",
+    "Sodimac",
+    "Command",
+    "Infraestructure"
+  ],
+  "author": "David Muñoz Gaete",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/peanuthub/ramen-cli#readme",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "yargs": "^10.0.3"
+  }
+}
