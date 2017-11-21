@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "loopback"
+  ],
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "max-len": "off"
+  }
+}
