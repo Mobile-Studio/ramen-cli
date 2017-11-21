@@ -1,6 +1,5 @@
 node_modules
 dist
-artifact.zip
 npm-debug.log
 coverage
 binaries
