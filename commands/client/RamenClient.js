@@ -1,5 +1,9 @@
 'use strict';
 const lodash = require('lodash');
+const fs = require('fs');
+const path = require('path');
+const findUp = require('find-up');
+const ENV = require('../../utils/config/ConfigurationClient');
 
 class RamenClient {
   /**
@@ -10,7 +14,12 @@ class RamenClient {
     return new Promise((resolve, reject) => {
       const settings = lodash.defaultsDeep({}, userSettings);
 
-      resolve(userSettings);
+      const packagePath = path.dirname(findUp.sync(['package.json']));
+
+      const rcFile = `${packagePath}/${ENV.get('RCFILE')}.json`;
+      fs.writeFileSync(rcFile, JSON.stringify(settings, null, '  '));
+
+      resolve(path.basename(rcFile));
     });
   };
 };

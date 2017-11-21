@@ -1,4 +1,0 @@
-
-Welcome to {{CLI_FULLNAME}} CLI!
----------------------
-Use `{{CLI_COMMAND_ROOT}} -h` to see available commands or go to {{CLI_DOC_URL}}

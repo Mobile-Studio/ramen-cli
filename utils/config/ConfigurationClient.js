@@ -6,7 +6,7 @@
  * PD: Today is option works only for ENVIRONMENT Variables
  */
 class ConfigurationClient {
-  constructor() {};
+  constructor() { };
 
   /**
    * Get Setting Value By Name
@@ -16,7 +16,7 @@ class ConfigurationClient {
    * @returns {String} return string value
    */
   get(settingName, defaultValue) {
-    var setting = process.env[settingName];
+    var setting = process.env['RAMEN_' + settingName];
     if (typeof setting === 'undefined' && typeof defaultValue === 'undefined') {
       throw new Error(`Environment Setting ${settingName} is undefined`);
     }
