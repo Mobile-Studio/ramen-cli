@@ -1,86 +1,113 @@
 'use strict';
+const CommandBase = require('./../utils/CommandBase');
 const inquirer = require('inquirer');
+const chalk = require('chalk');
+const lodash = require('lodash');
 
-const ENV = require('../utils/config/ConfigurationClient');
 const renderer = require('../utils/templates/FileRenderer');
 const errors = require('../utils/templates/ErrorRenderer');
-const promptUtils = require('./../utils/promptUtils');
 const client = require('./client/RamenClient');
 
-const MANIFIEST = {
-  'company': {
-    name: 'company',
-    list: ENV.get('CONFIG_COMPANIES_AVAILABLES').split(','),
-  },
-  'environment': {
-    name: 'environment',
-    list: ENV.get('CONFIG_CLUSTERS_AVAILABLES').split(','),
-  },
-};
+class InitCommand extends CommandBase {
+  constructor() {
+    super('init');
+  }
 
-exports.command = 'init';
-exports.desc = `Interactively create a ${ENV.get('RCFILE')} file`;
-exports.builder = (yargs) => {
-  return yargs.commandDir('api_cmds');
-};
-exports.handler = (argv) => {
-  return new Promise((resolve, reject) => {
-    // PROMPT MAIN QUESTION'S!
-    const promptConfigurationQuestions = () => {
-      return new Promise((resolve, reject) => {
-        const prompts = [];
+  /**
+   * Get Custom Vars
+   */
+  vars() {
+    if (!this._vars) {
+      this._vars = {
+        'company': {
+          name: 'company',
+          list: this.ENV('CONFIG_COMPANIES_AVAILABLES').split(','),
+        },
+        'environment': {
+          name: 'environment',
+          list: this.ENV('CONFIG_CLUSTERS_AVAILABLES').split(','),
+        },
+      };
+    }
 
-        // COMPANY SELECTION
-        prompts.push({
-          type: 'list',
-          name: MANIFIEST.company.name,
-          message: `What\'s is the company you contribute for? ${promptUtils.defaultLabel(argv[MANIFIEST.company.name])}`,
-          choices: MANIFIEST.company.list,
-          default: promptUtils.indexOf(MANIFIEST.company.list, argv[MANIFIEST.company.name]),
-        });
+    return this._vars;
+  }
 
-        // ENVIRONMENT SELECTION
-        prompts.push({
-          type: 'list',
-          name: MANIFIEST.environment.name,
-          message: `In what staging you want to work? ${promptUtils.defaultLabel(argv[MANIFIEST.environment.name])}`,
-          choices: MANIFIEST.environment.list,
-          default: promptUtils.indexOf(MANIFIEST.environment.list, argv[MANIFIEST.environment.name]),
-        });
+  describe() {
+    return `Interactively create a ${this.ENV('RCFILE')} file`;
+  }
 
-        inquirer
-          .prompt(prompts)
-          .then(resolve);
-      });
-    };
+  callback(args) {
+    return new Promise((resolve, reject) => {
+      // PROMPT MAIN QUESTION'S!
+      const promptConfigurationQuestions = () => {
+        return new Promise((resolve, reject) => {
+          const prompts = [];
 
-    promptConfigurationQuestions()
-      .then((answers) => {
-        // Is Correct??
-        inquirer.prompt({
-          name: 'confirm',
-          message: renderer.render('app-init/confirm.hbs', answers),
-          default: 'Y',
-        })
-          .then((result) => {
-            // Confirm
-            const match = (new RegExp(/y|yes/ig));
-            if (match.test(result.confirm.toLowerCase())) {
-              promptUtils.progressBar().show();
+          const defaultLabel = (collection) => {
+            const value = this.settings().stack[collection.name];
+            return chalk.italic.gray((value ? ` (${value})` : ''));
+          };
 
-              // Create a RC file standar, to keep specific configuration!
-              client
-                .createRCFile(answers)
-                .then((file) => {
-                  promptUtils.progressBar().close(`Configuration saved in ${file}`);
-                  process.exit();
-                }, (err) => {
-                  errors.UnknowError(err);
-                });
-            } else {
-              errors.InvalidChoice(result.confirm, ['y', 'yes']);
-            }
+          const getSelectedIndex = (collection) => {
+            const valueToFind = this.settings().stack[collection.name];
+            return lodash.indexOf(collection.list, valueToFind);
+          };
+
+          // COMPANY SELECTION
+          prompts.push({
+            type: 'list',
+            name: this.vars().company.name,
+            message: `What\'s is the company you contribute for? ${defaultLabel(this.vars().company)}`,
+            choices: this.vars().company.list,
+            default: getSelectedIndex(this.vars().company),
           });
-      });
-  });
-};
+
+          // ENVIRONMENT SELECTION
+          prompts.push({
+            type: 'list',
+            name: this.vars().environment.name,
+            message: `In what staging you want to work? ${defaultLabel(this.vars().environment)}`,
+            choices: this.vars().environment.list,
+            default: getSelectedIndex(this.vars().environment),
+          });
+
+          inquirer
+            .prompt(prompts)
+            .then(resolve);
+        });
+      };
+
+      promptConfigurationQuestions()
+        .then((answers) => {
+          // Is Correct??
+          inquirer.prompt({
+            name: 'confirm',
+            message: renderer.render('app-init/confirm.hbs', answers),
+            default: 'Y',
+          })
+            .then((result) => {
+              // Confirm
+              const match = (new RegExp(/y|yes/ig));
+              if (match.test(result.confirm.toLowerCase())) {
+                this.progressBar().show();
+
+                // Create a RC file standar, to keep specific configuration!
+                client
+                  .createRCFile(answers)
+                  .then((file) => {
+                    this.progressBar().close(`Recipe saved in ${file}`);
+                    process.exit();
+                  }, (err) => {
+                    errors.UnknowError(err);
+                  });
+              } else {
+                errors.InvalidChoice(result.confirm, ['y', 'yes']);
+              }
+            });
+        });
+    });
+  }
+}
+
+module.exports = new InitCommand();

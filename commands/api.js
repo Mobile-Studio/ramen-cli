@@ -1,7 +1,29 @@
 'use strict';
-exports.command = 'api <command>';
-exports.desc = 'Manage Api projects';
-exports.builder = (yargs) => {
-  return yargs.commandDir('api_cmds');
-};
-exports.handler = (argv) => { };
+const CommandBase = require('../utils/CommandBase');
+
+/**
+ * API Command
+ */
+class ApiCommand extends CommandBase {
+  // Constructor
+  constructor() {
+    super('api <command>');
+  }
+
+  builder() {
+    // Return the sub commands for the parent
+    return (yargs) => {
+      return yargs.commandDir('api_cmds');
+    };
+  }
+
+  describe() {
+    return 'Manage Api projects';
+  }
+
+  callback(args) {
+    return (argv) => { };
+  }
+}
+
+module.exports = new ApiCommand();

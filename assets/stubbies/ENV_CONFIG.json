@@ -1,0 +1,12 @@
+{
+  "Sodimac": {
+    "Sandbox": {
+      "DEPLOYER_URL": "http://sodimac"
+    }
+  },
+  "SegurosFalabella": {
+    "Sandbox": {
+      "DEPLOYER_URL": "http://segurosFalabella"
+    }
+  }
+}

@@ -1,9 +1,30 @@
 'use strict';
-const ENV = require('../../utils/config/ConfigurationClient');
+const CommandBase = require('../../utils/CommandBase');
+const apiClient = require('./client/ApiClient');
+/**
+ * Deploy Command
+ */
+class DeployCommand extends CommandBase {
+  constructor() {
+    super('deploy');
+  }
 
-exports.command = 'deploy';
-exports.describe = 'Deploy API projects to the configured stack';
+  describe() {
+    return 'Deploy API projects to the configured stack';
+  }
 
-exports.handler = (argv) => {
-  console.log(argv);
-};
+  callback(args) {
+    console.log('- collecting ingredients.');
+    this.progressBar().show();
+
+    apiClient
+      .deploy('http://localhost', 'stack', '')
+      .then(() => {
+        this.progressBar().close();
+        process.exit();
+      });
+  }
+}
+
+// Find the Root Path
+module.exports = new DeployCommand();

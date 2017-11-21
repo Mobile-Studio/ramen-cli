@@ -14,7 +14,7 @@
       "type": "node",
       "request": "launch",
       "name": "Program - Debug",
-      "envFile": "${workspaceRoot}/.env",
+      "envFile": "${workspaceRoot}/assets/.env",
       "program": "${workspaceFolder}/ramen-cli.js"
     }
   ]
