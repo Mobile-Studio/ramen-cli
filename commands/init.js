@@ -147,7 +147,7 @@ class InitCommand extends CommandBase {
                   this
                     .createRCFile(answers)
                     .then((file) => {
-                      this.progressBar().close(`Ramen recipe saved in ${file}`);
+                      this.progressBar().success(`Ramen recipe saved in ${file}`);
                       process.exit();
                     }, (err) => {
                       console.error(err);

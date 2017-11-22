@@ -4,9 +4,9 @@
       "DEPLOYER_URL": "http://sodimac"
     }
   },
-  "SegurosFalabella": {
+  "Seguros Falabella": {
     "Sandbox": {
-      "DEPLOYER_URL": "http://segurosFalabella"
+      "DEPLOYER_URL": "https://api.staging.segurosfalabella.cloud/deployer/v1/deployments"
     }
   }
 }

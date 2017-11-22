@@ -8,6 +8,7 @@ const Errors = require('./templates/ErrorRenderer');
 const fs = require('fs');
 const lodash = require('lodash');
 const settings = require('./../utils/config/Settings');
+const ora = require('ora');
 
 /**
  * Command Base Class
@@ -20,7 +21,9 @@ class CommandBase {
   constructor(command) {
     this.command = command;
     this.describe = this.describe();
-    this.builder = this.builder();
+    this.builder = (yargs) => {
+      this.manifiest(yargs);
+    };
     this.handler = (yargs) => {
       this.callback(yargs);
     };
@@ -62,7 +65,7 @@ class CommandBase {
   /**
    * YARGS Builder Handler
    */
-  builder() {
+  manifiest() {
     return (yargs) => { };
   }
 
@@ -87,28 +90,40 @@ class CommandBase {
   progressBar() {
     return {
       show: (msg) => {
+        const message = (msg || 'Mixing all together with some spicy');
         if (!this.loaderUi) {
-          const message = (msg || 'Mixing all together with some spicy');
-          this.i = 4;
-          this.loader = [`\n/ ${message}.\n`, `\n| ${message}..\n`, `\n\\ ${message}...\n`, `\n- ${message}....\n`];
-          this.loaderUi = new inquirer.ui.BottomBar({
-            bottomBar: this.loader[this.i % 4],
+          this.loaderUi = ora({
+            spinner: 'bouncingBar',
+            color: 'blue',
           });
         }
-        setInterval(() => {
-          this.loaderUi.updateBottomBar(this.loader[this.i++ % 4]);
-        }, 300);
+        this.loaderUi.text = message;
+        this.loaderUi.start();
       },
       fail: (msg) => {
-        const emoji = require('node-emoji').get('ramen');
-        this.loaderUi.updateBottomBar(chalk.green(msg ? `\n${msg} ${emoji}\n` : `\nWe are sorry! ${emoji}\n`));
+        if (this.loaderUi) {
+          const emoji = require('node-emoji').get('ramen');
+          const message = chalk.red(msg ? `${msg} ${emoji}\n` : `We are sorry! ${emoji}\n`);
+          this.loaderUi.fail(message);
+        }
       },
-      close: (msg) => {
-        const emoji = require('node-emoji').get('ramen');
-        this.loaderUi.updateBottomBar(chalk.green(msg ? `\n${msg} ${emoji}\n` : `\nDone! ${emoji}\n`));
+      success: (msg) => {
+        if (this.loaderUi) {
+          const emoji = require('node-emoji').get('ramen');
+          const message = chalk.green(msg ? `${msg} ${emoji}\n` : `Done! ${emoji}\n`);
+          this.loaderUi.succeed(message);
+        }
+      },
+      clear: () => {
+        if (this.loaderUi) {
+          this.loaderUi.stop();
+          this.loaderUi.clear();
+        }
       },
       update: (msg) => {
-        this.loaderUi.updateBottomBar(msg);
+        if (this.loaderUi) {
+          this.loaderUi.text = msg;
+        }
       },
     };
   }

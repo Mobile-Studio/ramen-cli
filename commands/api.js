@@ -10,11 +10,10 @@ class ApiCommand extends CommandBase {
     super('api <command>');
   }
 
-  builder() {
+  manifiest(yargs) {
     // Return the sub commands for the parent
-    return (yargs) => {
-      return yargs.commandDir('api_cmds');
-    };
+    return yargs
+      .commandDir('api_cmds');
   }
 
   describe() {
