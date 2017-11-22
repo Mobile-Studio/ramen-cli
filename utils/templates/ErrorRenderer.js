@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs');
 const handlebars = require('handlebars');
+const chalk = require('chalk').default;
 
 /**
  * Output Message Rendered
@@ -13,9 +14,9 @@ class ErrorRenderer {
    */
   InvalidChoice(userChoice, validChoices = []) {
     console.log('');
-    console.log(`Oops!, invalid choice: [${userChoice}]`.red);
+    console.log(chalk.red(`Oops!, invalid choice: [${userChoice}]`));
     if (validChoices.length > 0) {
-      console.log(`Valid choices are: <${validChoices.join('|')}>`.blue);
+      console.log(chalk.blue(`Valid choices are: <${validChoices.join('|')}>`));
     }
     console.log('');
   }
@@ -26,7 +27,7 @@ class ErrorRenderer {
    */
   UnknowError(error) {
     console.log('');
-    console.log('Oops!, An error has ocurred:'.red);
+    console.log(chalk.red('Oops!, An error has ocurred:'));
     console.error(error);
     console.log('');
   }

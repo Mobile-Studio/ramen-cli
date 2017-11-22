@@ -1,3 +1,6 @@
 stack:
   company: Sodimac
   environment: Sandbox
+deployment:
+  name: ramen-cli
+  version: 1.0.0

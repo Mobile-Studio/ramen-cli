@@ -4,8 +4,10 @@ const findUp = require('find-up');
 const chalk = require('chalk').default;
 const inquirer = require('inquirer');
 const YAML = require('./templates/YamlRenderer');
+const Errors = require('./templates/ErrorRenderer');
 const fs = require('fs');
 const lodash = require('lodash');
+const settings = require('./../utils/config/Settings');
 
 /**
  * Command Base Class
@@ -24,19 +26,21 @@ class CommandBase {
     };
   }
 
-  settings() {
-    try {
-      const rcPath = this.findUp(this.ENV('RCFILE'));
-      const config = lodash.defaultsDeep(
-        rcPath ? YAML.fromYAMLFile(rcPath) : {},
-        require(`${__dirname}/../assets/defaults/default-rc.json`)
-      );
+  /**
+   * Get the Setting for the CLI in the RC file
+   * @param {Boolean} checkIntegrity Check if the file is valid
+   */
+  settings(checkIntegrity) {
+    return settings
+      .getRcSettings(checkIntegrity);
+  };
 
-      return config;
-    } catch (ex) {
-      console.error(ex);
-      throw ex;
-    }
+  /**
+   * Get the Project Settings accord to the language (package.json for NodeJS)
+   */
+  getProjectSettings(verboseError) {
+    return settings
+      .getProjectSettings(verboseError);
   };
 
   /**
@@ -95,6 +99,10 @@ class CommandBase {
           this.loaderUi.updateBottomBar(this.loader[this.i++ % 4]);
         }, 300);
       },
+      fail: (msg) => {
+        const emoji = require('node-emoji').get('ramen');
+        this.loaderUi.updateBottomBar(chalk.green(msg ? `\n${msg} ${emoji}\n` : `\nWe are sorry! ${emoji}\n`));
+      },
       close: (msg) => {
         const emoji = require('node-emoji').get('ramen');
         this.loaderUi.updateBottomBar(chalk.green(msg ? `\n${msg} ${emoji}\n` : `\nDone! ${emoji}\n`));
@@ -103,6 +111,13 @@ class CommandBase {
         this.loaderUi.updateBottomBar(msg);
       },
     };
+  }
+
+  /**
+   * For Printing Nicely and friendly errors
+   */
+  errors() {
+    return Errors;
   }
 }
 

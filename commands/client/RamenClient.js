@@ -11,18 +11,13 @@ class RamenClient {
   /**
    * Create an RC standard file in the root file of the project (where is the package.json)
    * @param {*} userSettings User Settings to override
+   * @param {String} projectSettingPath Project Settings Path (for getting the path)
    */
-  createRCFile(userSettings) {
+  createRCFile(userSettings, projectSettingPath) {
     return new Promise((resolve, reject) => {
-      console.log(defaultJsonRC);
-      const settings = lodash.defaultsDeep({
-        stack: userSettings,
-      }, defaultJsonRC);
-
-      const packagePath = path.dirname(findUp.sync(['package.json']));
+      const packagePath = projectSettingPath;
       const rcFile = `${packagePath}/${ENV.get('RCFILE')}`;
-      fs.writeFileSync(rcFile, YAML.toYAML(settings));
-
+      fs.writeFileSync(rcFile, YAML.toYAML(userSettings));
       resolve(path.basename(rcFile));
     });
   };
