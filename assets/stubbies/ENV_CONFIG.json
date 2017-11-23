@@ -1,7 +1,7 @@
 {
   "Sodimac": {
     "Sandbox": {
-      "DEPLOYER_URL": "http://sodimac"
+      "DEPLOYER_URL": "https://api.sandbox.mobilestudio.cloud/deployer/v1/deployments"
     }
   },
   "Seguros Falabella": {
